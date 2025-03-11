@@ -1,6 +1,6 @@
 import os
 import requests
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 # Charger les tokens depuis les variables d'environnement
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
@@ -15,29 +15,26 @@ def query_huggingface(text):
     return response.json()
 
 # Commande /start
-def start(update, context):
-    update.message.reply_text("Bienvenue! Envoie-moi un message.")
+async def start(update, context):
+    await update.message.reply_text("Bienvenue! Envoie-moi un message.")
 
 # Réponse aux messages avec Hugging Face
-def echo(update, context):
+async def echo(update, context):
     user_message = update.message.text
     hf_response = query_huggingface(user_message)
-    update.message.reply_text(f"Réponse de Hugging Face : {hf_response}")
+    await update.message.reply_text(f"Réponse de Hugging Face : {hf_response}")
 
 def main():
-    # Initialiser le bot
-    updater = Updater(TELEGRAM_TOKEN, use_context=True)
-    dp = updater.dispatcher
+    # Initialiser le bot avec Application
+    application = Application.builder().token(TELEGRAM_TOKEN).build()
 
     # Ajouter les handlers
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     # Démarrer le bot
-    updater.start_polling()
-    updater.idle()
+    application.run_polling()
 
 if __name__ == "__main__":
     main()
-
 
