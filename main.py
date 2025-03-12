@@ -5,7 +5,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 # Charger les tokens depuis les variables d'environnement
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 HF_TOKEN = os.environ.get("HF_TOKEN")
-HF_API_URL = "https://huggingface.co/distilbert/distilbert-base-multilingual-cased"
+HF_API_URL = "https://api-inference.huggingface.co/models/distilbert/distilbert-base-multilingual-cased""
 
 # Fonction pour interroger Hugging Face
 def query_huggingface(text):
