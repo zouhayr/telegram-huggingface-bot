@@ -6,7 +6,11 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 HF_TOKEN = os.environ.get("HF_TOKEN")
 HF_API_URL = "https://api-inference.huggingface.co/models/distilbert-base-multilingual-cased"  # Correction de l'URL
-
+application.run_polling(
+    close_loop=False,
+    stop_signals=None,  # Désactive les handlers de signal système
+    allowed_updates=None
+)
 # Fonction pour interroger Hugging Face
 def query_huggingface(text):
     headers = {"Authorization": f"Bearer {HF_TOKEN}"}
