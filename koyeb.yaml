@@ -28,7 +28,7 @@ services:
     build:
       args:
         BP_PYTHON_VERSION: "3.11.8"  # Force la version Python
-      command: gunicorn --bind :$PORT --workers 1 --timeout 120 main:app
+     command: gunicorn --bind :$PORT --workers 1 --timeout 120 --log-level debug main:app
 git:
   branch: main
   repository: zouhayr/telegram-huggingface-bot
