@@ -22,3 +22,6 @@ services:
       port: 8080
       interval: 30s
       timeout: 3s
+build:
+  args:
+    BP_PYTHON_VERSION: "3.11.8"  # Optionnel : forcer la version
