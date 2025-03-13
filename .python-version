@@ -1,1 +1,2 @@
-echo "3.11" > .python-version
+# Contenu CORRECT du fichier (sans commentaires ni commandes)
+echo "3.11.8" > .python-version
