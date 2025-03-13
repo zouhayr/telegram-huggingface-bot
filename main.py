@@ -1,23 +1,22 @@
-# Ajoutez en fin de fichier avant le main()
-def create_app():
-    return Application.builder().token(TELEGRAM_TOKEN).build()
+import os
+import requests
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
-# Modifiez la fonction main()
+# Charger les tokens AU NIVEAU GLOBAL
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+HF_TOKEN = os.environ.get("HF_TOKEN")
+HF_API_URL = "https://api-inference.huggingface.co/models/distilbert-base-multilingual-cased"
+
+def query_huggingface(text):
+    # ... (garder le reste de la fonction inchangé)
+
 def main():
+    # Vérification DES VARIABLES GLOBALES
     if not TELEGRAM_TOKEN or not HF_TOKEN:
-        raise ValueError("Tokens manquants!")
+        print("Erreur : Tokens non configurés!")
+        return
     
-    app = create_app()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-    
-    # Configuration webhook
-    app.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.environ.get("PORT", 8080)),
-        webhook_url=os.environ.get("WEBHOOK_URL", "https://isticharabot-koyeb.app/webhook"),
-        max_connections=50
-    )
+    # ... (reste du code main() inchangé)
 
 if __name__ == "__main__":
     main()
