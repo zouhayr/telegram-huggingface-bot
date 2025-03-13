@@ -1,6 +1,7 @@
 import os
 import requests
 import asyncio
+import multiprocessing
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from flask import Flask
 
@@ -46,8 +47,8 @@ async def error_handler(update, context):
     if update and update.message:
         await update.message.reply_text("Désolé, une erreur est survenue. Veuillez réessayer plus tard.")
 
-# Fonction pour lancer le bot Telegram
-async def run_bot():
+# Fonction pour lancer le bot Telegram (exécutée dans un processus séparé)
+def run_bot():
     if not TELEGRAM_TOKEN or not HF_TOKEN:
         print("Configuration manquante !")
         return
@@ -58,17 +59,24 @@ async def run_bot():
         application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
         application.add_error_handler(error_handler)
         print("Démarrage du bot...")
-        await application.run_polling(timeout=20)
+        # Créer une nouvelle boucle d'événements pour ce processus
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(application.run_polling(timeout=20))
     except Exception as e:
         print(f"Erreur lors du démarrage : {e}")
+    finally:
+        loop.close()
 
 # Endpoint Flask pour health check
 @app.route('/health')
 def health_check():
     return "OK", 200
 
-# Lancer le bot dans le thread principal
+# Lancer le bot dans un processus séparé
 if __name__ == "__main__":
-    # Créer une boucle d'événements pour le thread principal
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(run_bot())
+    # Démarrer le bot Telegram dans un processus séparé
+    bot_process = multiprocessing.Process(target=run_bot, daemon=True)
+    bot_process.start()
+    # Flask sera démarré par gunicorn (via koyeb.yaml)
+    # Ne pas appeler app.run() ici
