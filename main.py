@@ -2,6 +2,7 @@ import os
 import requests
 import asyncio
 import multiprocessing
+import time
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from flask import Flask
 
@@ -73,10 +74,17 @@ def run_bot():
 def health_check():
     return "OK", 200
 
-# Lancer le bot dans un processus séparé
+# Lancer le bot dans un processus séparé et maintenir le processus principal actif
 if __name__ == "__main__":
     # Démarrer le bot Telegram dans un processus séparé
     bot_process = multiprocessing.Process(target=run_bot, daemon=True)
     bot_process.start()
-    # Flask sera démarré par gunicorn (via koyeb.yaml)
-    # Ne pas appeler app.run() ici
+    print("Bot démarré dans un processus séparé. Flask sera démarré par gunicorn.")
+    # Maintenir le processus principal actif pour que gunicorn puisse fonctionner
+    try:
+        while True:
+            time.sleep(1)  # Attendre indéfiniment pour garder le processus principal actif
+    except KeyboardInterrupt:
+        print("Arrêt du processus principal...")
+        bot_process.terminate()
+        bot_process.join()
