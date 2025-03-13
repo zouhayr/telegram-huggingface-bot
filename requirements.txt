@@ -1,4 +1,6 @@
-python-telegram-bot==20.8
-requests
+python-telegram-bot==20.5
+requests==2.31.0
+gunicorn==21.2.0  # Nouveau serveur web requis
+huggingface_hub==0.22.2  # Pour une meilleure intégration HF
 
 
