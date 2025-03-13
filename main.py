@@ -72,6 +72,7 @@ def run_bot():
 # Endpoint Flask pour health check
 @app.route('/health')
 def health_check():
+    print("Health check reçu !")
     return "OK", 200
 
 # Lancer le bot dans un processus séparé et maintenir le processus principal actif
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     # Maintenir le processus principal actif pour que gunicorn puisse fonctionner
     try:
         while True:
-            time.sleep(1)  # Attendre indéfiniment pour garder le processus principal actif
+            time.sleep(1)
     except KeyboardInterrupt:
         print("Arrêt du processus principal...")
         bot_process.terminate()
