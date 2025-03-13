@@ -35,7 +35,12 @@ def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
     
     print("Démarrage...")
-    app.run_polling()
+   app.run_webhook(
+        listen="0.0.0.0",
+        port=int(os.environ.get("PORT", 8080)),
+        webhook_url=os.environ.get("WEBHOOK_URL"),
+        max_connections=50
+    )
 
 if __name__ == "__main__":
     main()
