@@ -12,12 +12,8 @@ services:
       - path: /
         port: 8080
     env:
-      - key: TELEGRAM_TOKEN
-        value: "{{.TELEGRAM_TOKEN}}"  # À créer dans Secrets
-      - key: HF_TOKEN
-        value: "{{.HF_TOKEN}}"        # À créer dans Secrets
-      - key: PORT
-        value: "8080"                 # Ajout crucial
+       - key: WEBHOOK_URL
+        value: "https://isticharabot-koyeb.app/webhook" # À remplacer
     http_healthcheck:
       path: /
       port: 8080
