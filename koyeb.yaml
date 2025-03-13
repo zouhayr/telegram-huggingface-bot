@@ -1,4 +1,4 @@
-app: telegram-huggingface-bot  # Remplacez par le vrai nom de votre app Koyeb
+app: telegram-huggingface-bot
 services:
   - name: telegram-bot
     type: web
@@ -12,10 +12,14 @@ services:
       - path: /
         port: 8080
     env:
-       - key: WEBHOOK_URL
-        value: "https://isticharabot-koyeb.app/webhook" # À remplacer
+      - key: TELEGRAM_TOKEN
+        value: "{{.TELEGRAM_TOKEN}}"  # À créer dans Secrets
+      - key: HF_TOKEN
+        value: "{{.HF_TOKEN}}"        # À créer dans Secrets
+      - key: PORT
+        value: "8080"                 # Nécessaire pour gunicorn
     http_healthcheck:
-      path: /
+      path: /health  # Correspond à l'endpoint Flask dans main.py
       port: 8080
       interval: 30s
       timeout: 3s
@@ -25,7 +29,6 @@ services:
       args:
         BP_PYTHON_VERSION: "3.11.8"  # Force la version Python
       command: gunicorn --bind :$PORT --workers 1 --timeout 120 main:app
-      
 git:
   branch: main
   repository: zouhayr/telegram-huggingface-bot
