@@ -1,5 +1,4 @@
-# Configuration Koyeb pour web service
-app: votre-nom-app
+app: telegram-huggingface-bot  # Remplacez par le vrai nom de votre app Koyeb
 services:
   - name: telegram-bot
     type: web
@@ -8,20 +7,30 @@ services:
         http_path: /
     scaling:
       min: 1
-      max: 1
+      max: 1  # Obligatoire pour éviter les conflits Telegram
     routes:
       - path: /
         port: 8080
     env:
       - key: TELEGRAM_TOKEN
-        value: "{{.TELEGRAM_TOKEN}}"
+        value: "{{.TELEGRAM_TOKEN}}"  # À créer dans Secrets
       - key: HF_TOKEN
-        value: "{{.HF_TOKEN}}"
+        value: "{{.HF_TOKEN}}"        # À créer dans Secrets
+      - key: PORT
+        value: "8080"                 # Ajout crucial
     http_healthcheck:
       path: /
       port: 8080
       interval: 30s
       timeout: 3s
-build:
-  args:
-    BP_PYTHON_VERSION: "3.11.8"  # Optionnel : forcer la version
+      success_threshold: 1
+      failure_threshold: 3
+    build:
+      args:
+        BP_PYTHON_VERSION: "3.11.8"  # Force la version Python
+      command: gunicorn --bind :$PORT --workers 1 --timeout 120 main:app
+      
+git:
+  branch: main
+  repository: zouhayr/telegram-huggingface-bot
+  provider: github
