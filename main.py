@@ -1,8 +1,8 @@
 import os
 import requests
+import asyncio
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from flask import Flask
-import threading
 
 # Initialisation de l'application Flask
 app = Flask(__name__)
@@ -47,7 +47,7 @@ async def error_handler(update, context):
         await update.message.reply_text("Désolé, une erreur est survenue. Veuillez réessayer plus tard.")
 
 # Fonction pour lancer le bot Telegram
-def run_bot():
+async def run_bot():
     if not TELEGRAM_TOKEN or not HF_TOKEN:
         print("Configuration manquante !")
         return
@@ -56,9 +56,9 @@ def run_bot():
         application = Application.builder().token(TELEGRAM_TOKEN).build()
         application.add_handler(CommandHandler("start", start))
         application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-        application.add_error_handler(error_handler)  # Ajout du gestionnaire d'erreurs
+        application.add_error_handler(error_handler)
         print("Démarrage du bot...")
-        application.run_polling(timeout=20)  # Utilisation de run_polling avec un timeout
+        await application.run_polling(timeout=20)
     except Exception as e:
         print(f"Erreur lors du démarrage : {e}")
 
@@ -67,8 +67,8 @@ def run_bot():
 def health_check():
     return "OK", 200
 
-# Lancer le bot dans un thread et Flask dans le thread principal
+# Lancer le bot dans le thread principal
 if __name__ == "__main__":
-    bot_thread = threading.Thread(target=run_bot, daemon=True)
-    bot_thread.start()
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 8080)))
+    # Créer une boucle d'événements pour le thread principal
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(run_bot())
